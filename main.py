@@ -11,18 +11,21 @@ from discord import app_commands
 # ─────────────────────────────────────────────
 #  CONFIG
 # ─────────────────────────────────────────────
-CONFIG_FILE      = "config.json"
 GUILD_CONFIG_FILE = "guild_config.json"
 
-if not os.path.exists(CONFIG_FILE):
-    raise FileNotFoundError('Crea "config.json" con {"token":"IL_TUO_TOKEN"}')
+# Legge il token prima dalla variabile d'ambiente (Railway),
+# poi dal config.json locale (PC di casa)
+TOKEN = os.environ.get("TOKEN")
 
-with open(CONFIG_FILE, "r", encoding="utf-8") as f:
-    main_config = json.load(f)
-
-TOKEN = main_config.get("token")
 if not TOKEN:
-    raise ValueError("Nel file config.json manca la chiave 'token'.")
+    CONFIG_FILE = "config.json"
+    if os.path.exists(CONFIG_FILE):
+        with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+            main_config = json.load(f)
+        TOKEN = main_config.get("token")
+
+if not TOKEN:
+    raise ValueError("Token non trovato! Imposta la variabile TOKEN su Railway oppure crea config.json.")
 
 # Colore azzurro AtlatiMC
 ATLATI_BLUE = 0x00BFFF   # DeepSkyBlue
